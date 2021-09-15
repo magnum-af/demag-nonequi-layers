@@ -8,13 +8,14 @@ RUN apt update && DEBIAN_FRONTEND=noninteractive apt install -y \
     python3-pip && \
     pip3 install numpy
 
-ENV APP_PATH=/usr/src/demag_nonequi
-COPY . ${APP_PATH}
-WORKDIR ${APP_PATH}
+WORKDIR /tmp
+COPY . .
 
-RUN mkdir build && (cd build && cmake .. && make -j)
+RUN mkdir build && \
+    (cd build && cmake .. && make -j && make install) && \
+    rm -r build
 
-ENV PYTHONPATH=${APP_PATH}/build:${PYTHONPATH}
+ENV PYTHONPATH=/usr/local/lib
 CMD ["python3", "test.py"]
 
 LABEL Name=demagnonequidistant Version=0.0.1

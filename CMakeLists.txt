@@ -17,3 +17,6 @@ add_library(demag_nonequidistant MODULE demag_nonequidistant/demag_nonequidistan
 
 target_link_libraries(demag_nonequidistant ${Boost_LIBRARIES})
 target_include_directories(demag_nonequidistant PRIVATE ${PYTHON_INCLUDE_DIRS})
+
+include(GNUInstallDirs)
+install(TARGETS demag_nonequidistant LIBRARY  DESTINATION ${CMAKE_INSTALL_LIBDIR})
