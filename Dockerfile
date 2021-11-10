@@ -30,4 +30,4 @@ COPY --from=builder /tmp/test.py .
 ENV PYTHONPATH=/usr/local/lib
 CMD ["python3", "test.py"]
 
-LABEL Name=demagnonequidistant Version=0.0.1
+LABEL Name=demag_nonequi_layers Version=0.0.1

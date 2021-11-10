@@ -1,4 +1,4 @@
-import demag_nonequidistant as dn
+import demag_nonequi_layers as dnl
 
 if False:
     nx, ny = 5, 7
@@ -9,7 +9,7 @@ else:
     dx, dy =  1.e-9, 2e-9
     z_spacing = [1e-9, 2e-9, 3e-9, 4e-9, 5e-9, 6e-9]
 
-N_demag = dn.setup_demagtensor(nx = nx, ny = ny, dx = dx, dy = dy,
+N_demag = dnl.setup_demagtensor(nx = nx, ny = ny, dx = dx, dy = dy,
         dz_list = z_spacing)
 
 # print(N_demag)

@@ -316,7 +316,7 @@ bn::ndarray setup_demagtensor(size_t nx, size_t ny, double dx, double dy,
   return result;
 }
 
-BOOST_PYTHON_MODULE(demag_nonequidistant) {
+BOOST_PYTHON_MODULE(demag_nonequi_layers) {
   bn::initialize(); // NOTE: This is essential, otherwise returning bn::ndarray
                     // segfaults!
   bp::def("setup_demagtensor", setup_demagtensor,
