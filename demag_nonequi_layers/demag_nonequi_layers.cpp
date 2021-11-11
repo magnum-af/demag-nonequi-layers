@@ -1,5 +1,8 @@
+// suppress internal boost deprecated warnings:
+#define BOOST_BIND_GLOBAL_PLACEHOLDERS // bind placeholder
+#define BOOST_ALLOW_DEPRECATED_HEADERS // detail/iterator.hpp
+
 #include <algorithm>
-#define BOOST_BIND_GLOBAL_PLACEHOLDERS // surpress warning
 #include <boost/python.hpp>
 #include <boost/python/numpy.hpp>
 #include <cassert>
@@ -18,9 +21,7 @@ struct NonequiMesh {
 };
 
 namespace util {
-// inline int ij2k(const int i, const int j, const int n) {
 inline long int ij2k(long int i, long int j, long int n) {
-  // template <typename T> T ij2k(const T i, const T j, const T n) {
   return (n * (n + 1) / 2) - (n - i) * ((n - i) + 1) / 2 + j - i;
 }
 } // namespace util
@@ -81,13 +82,6 @@ double g(double x, double y, double z) {
   return result;
 }
 
-// double F2(const double x, const double y, const double z){
-//    return f(x, y, z);
-//    //Last three terms cancel out//return f(x, y, z) - f(x, 0, z) - f(x, y,
-//    0)
-//    + f(x, 0, 0);
-//}
-
 double F1(const double x, const double y, const double z, const double dz,
           const double dZ) {
   return f(x, y, z + dZ) - f(x, y, z) - f(x, y, z - dz + dZ) + f(x, y, z - dz);
@@ -99,26 +93,17 @@ double F0(const double x, const double y, const double z, const double dy,
          F1(x, y - dy + dY, z, dz, dZ) + F1(x, y - dy, z, dz, dZ);
 }
 
+// x, y, z is vector from source cuboid to target cuboid
+// dx, dy, dz are source cuboid dimensions
+// dX, dY, dZ are target cuboid dimensions
 double Nxx(const double x, const double y, const double z, const double dx,
            const double dy, const double dz, const double dX, const double dY,
            const double dZ) {
-  // x, y, z is vector from source cuboid to target cuboid
-  // dx, dy, dz are source cuboid dimensions
-  // dX, dY, dZ are target cuboid dimensions
-  // const double tau = dX * dY * dZ;// Defining dX, dY, dZ as target cuboid
-  // (one could alternatively choose dx, dy, dz with implications on x, y, z)
-  // return -1./(4.0 * M_PI * tau) * (
   return -1. / (4.0 * M_PI) *
          (F0(x, y, z, dy, dY, dz, dZ) - F0(x - dx, y, z, dy, dY, dz, dZ) -
           F0(x + dX, y, z, dy, dY, dz, dZ) +
           F0(x - dx + dX, y, z, dy, dY, dz, dZ));
 }
-
-// double G2(const double x, const double y, const double z){
-//    return g(x, y, z);
-//    //return g(x, y, z) - g(x, y, 0);
-//    //return g(x, y, z) - g(x, 0, z) - g(x, y, 0) + g(x, 0, 0);
-//}
 
 double G1(const double x, const double y, const double z, const double dz,
           const double dZ) {
@@ -131,34 +116,25 @@ double G0(const double x, const double y, const double z, const double dy,
          G1(x, y - dy + dY, z, dz, dZ) + G1(x, y - dy, z, dz, dZ);
 }
 
+// x, y, z is vector from source cuboid to target cuboid
+// dx, dy, dz are source cuboid dimensions
+// dX, dY, dZ are target cuboid dimensions
 double Nxy(const double x, const double y, const double z, const double dx,
            const double dy, const double dz, const double dX, const double dY,
            const double dZ) {
-  // x, y, z is vector from source cuboid to target cuboid
-  // dx, dy, dz are source cuboid dimensions
-  // dX, dY, dZ are target cuboid dimensions
-  // const double tau = dX * dY * dZ;// Defining dX, dY, dZ as target cuboid
-  // (one could alternatively choose dx, dy, dz with implications on x, y, z)
-  // return -1./(4.0 * M_PI * tau) * (
   return -1. / (4.0 * M_PI) *
          (G0(x, y, z, dy, dY, dz, dZ) - G0(x - dx, y, z, dy, dY, dz, dZ) -
           G0(x + dX, y, z, dy, dY, dz, dZ) +
           G0(x - dx + dX, y, z, dy, dY, dz, dZ));
 }
 
+// Calculates the signed distance beween elements by summing up i < j:
+// sum_(k=i)^(j-1)[spacings[k]] or i > j: sum_(k=j)^(i-1)[ - spacings[k]]
 double nonequi_index_distance(const std::vector<double> &spacings,
                               const std::size_t i, const std::size_t j,
                               const bool verbose) {
-  // Calculates the signed distance beween elements by summing up i < j:
-  // sum_(k=i)^(j-1)[spacings[k]] or i > j: sum_(k=j)^(i-1)[ - spacings[k]]
-  // Note that spacings[spacings.size()-1] is never used
-  if (verbose and (i == spacings.size() or j == spacings.size())) {
-    std::cout
-        << "Warning: in nonequi_index_distance: index == vector.size(), the "
-           "distance includes the last element which is not wanted "
-           "behaviour"
-        << std::endl;
-  }
+  assert(i < spacings.size());
+  assert(j < spacings.size());
 
   double result = 0;
   if (i > j) {
@@ -191,10 +167,6 @@ void init_N(const NonequiMesh &nemesh, std::vector<double> &N,
                 6 * (util::ij2k(i_source, i_target, nemesh.nz()) +
                      ((nemesh.nz() * (nemesh.nz() + 1)) / 2) *
                          (iy + ny_expanded(nemesh.ny) * ix));
-            // std::cout << "idx=" << idx << " of " <<
-            // nx_expanded(nemesh.nx) * ny_expanded(nemesh.ny) *
-            // (nemesh.nz() * (nemesh.nz() + 1))/2 * 6
-            // << std::endl;
             const double x = nemesh.dx * static_cast<double>(jx);
             const double y = nemesh.dy * static_cast<double>(jy);
             const double z = nonequi_index_distance(nemesh.z_spacing, i_source,
@@ -251,14 +223,16 @@ std::vector<double> calculate_N(const NonequiMesh &nemesh,
   return N_values;
 }
 
-  // TODO add option returning fft transform if arrayfire is installed
-
-  // af::array Naf(6, (nemesh.nz() * (nemesh.nz() +
-  // 1)) / 2, ny_expanded(nemesh.ny), nx_expanded(nemesh.nx),
-  //               N_values.data());
-  // Naf = af::reorder(Naf, 3, 2, 1, 0);
-  // Naf = af::fftR2C<2>(Naf);
-  // return Naf;
+// // Note: possible option returning fft transform if arrayfire is installed:
+// // af::array demag_to_afarray_2d_fft(const std::vector<double> &N_tensor,
+// //                  const NonequiMesh &nemesh) {
+// //   af::array Naf(6, (nemesh.nz() * (nemesh.nz() + 1)) / 2,
+// //                 ny_expanded(nemesh.ny), nx_expanded(nemesh.nx),
+// //                 N_tensor.data());
+// //   Naf = af::reorder(Naf, 3, 2, 1, 0);
+// //   Naf = af::fftR2C<2>(Naf);
+// //   return Naf;
+// // }
 
 } // namespace newell_nonequi
 } // namespace magnumaf
