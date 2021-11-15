@@ -25,7 +25,7 @@ RUN apt update && apt install -y --no-install-recommends \
     python3-numpy && \
     rm -rf /var/lib/apt/lists/*
 COPY --from=builder /usr/local/lib/*.so /usr/local/lib
-COPY --from=builder /tmp/test.py .
+COPY --from=builder /tmp/*.py ./
 
 ENV PYTHONPATH=/usr/local/lib
 CMD ["python3", "test.py"]
