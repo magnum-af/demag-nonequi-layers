@@ -295,5 +295,7 @@ BOOST_PYTHON_MODULE(demag_nonequi_layers_cpp) {
                     // segfaults!
   bp::def("setup_demagtensor", setup_demagtensor,
           (bp::arg("nx"), bp::arg("ny"), bp::arg("dx"), bp::arg("dy"),
-           bp::arg("dz_list")));
+           bp::arg("dz_list")),
+          "Computes the demag tensor multi-threaded and returns it as numpy "
+          "array.");
 }

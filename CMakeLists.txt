@@ -10,7 +10,7 @@ set(CMAKE_SHARED_MODULE_PREFIX "") # skip the 'lib' prefix: lib<x>.so -> <x>.so
 
 set(LIB_DEMAG_NONEQUI_LAYERS ${PROJECT_NAME}) # use project name as libname
 
-add_library(${LIB_DEMAG_NONEQUI_LAYERS} MODULE demag_nonequi_layers/demag_nonequi_layers.cpp)
+add_library(${LIB_DEMAG_NONEQUI_LAYERS} MODULE demag_nonequi_layers/lib/demag_nonequi_layers.cpp)
 
 target_compile_features(${LIB_DEMAG_NONEQUI_LAYERS} PRIVATE cxx_std_11) # min required std
 target_compile_options(${LIB_DEMAG_NONEQUI_LAYERS} PRIVATE -O3 -Wall -Wpedantic) # -Wconversion

@@ -1,7 +1,8 @@
 import numpy as np
-import demag_nonequi_layers_cpp as dnlc
+import demag_nonequi_layers.demag_nonequi_layers_cpp as dnlc
 from typing import List
 
+# or reexport: from demag_nonequi_layers_cpp import setup_demagtensor as N_demag
 def N_demag(nx: int, ny: int, dx: float, dy: float, dz_list: List[float]):
     return dnlc.setup_demagtensor(nx = nx, ny = ny, dx = dx, dy = dy,
         dz_list = dz_list)
