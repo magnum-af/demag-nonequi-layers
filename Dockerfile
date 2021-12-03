@@ -17,7 +17,7 @@ COPY . .
 RUN python3 setup.py bdist_wheel && ls dist/
 
 # Using multi-stage build, shrinking final image from 563MB to 151MB
-FROM ubuntu:20.04
+FROM ubuntu:20.04 as runtime
 RUN apt update && apt install -y --no-install-recommends \
     libboost-python1.71.0 \
     libboost-numpy1.71.0 \

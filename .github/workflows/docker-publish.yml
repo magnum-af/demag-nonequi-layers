@@ -3,8 +3,8 @@ name: Docker
 # workflow from docker build and publish template with editions from https://docs.docker.com/ci-cd/github-actions/
 
 on:
-  schedule:
-    - cron: '45 6 * * *'
+  # schedule: # nightly build
+  #   - cron: '45 2 * * *'
   push:
     branches: [ main ]
     # Publish semver tags as releases.
